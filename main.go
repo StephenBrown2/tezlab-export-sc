@@ -2,12 +2,25 @@ package main
 
 import (
 	"encoding/csv"
-	"flag"
 	"fmt"
-	"log"
 	"os"
+	"path/filepath"
 	"time"
+
+	flag "github.com/spf13/pflag"
 )
+
+func usage() {
+	exec, err := os.Executable()
+	if err != nil {
+		fmt.Println("Error finding own executable")
+		os.Exit(1)
+	}
+
+	fmt.Printf("\nUsage: %s [--after DATE] CSVFILE\n", filepath.Base(exec))
+	flag.PrintDefaults()
+	os.Exit(2)
+}
 
 func main() {
 	var (
@@ -16,11 +29,19 @@ func main() {
 		err       error
 	)
 
+	flag.Usage = usage
+	help := flag.BoolP("help", "h", false, "Display help")
+
 	flag.StringVar(&after, "after", "", "Date after which to display new supercharger visits")
 	flag.Parse()
 
+	if *help {
+		flag.Usage()
+	}
+
 	if len(flag.Args()) < 1 {
-		log.Fatalln("Must provide csv file as positional argument")
+		fmt.Println("Must provide csv file as positional argument")
+		flag.Usage()
 	}
 
 	if after != "" {
@@ -33,7 +54,9 @@ func main() {
 		}
 
 		if err != nil {
-			log.Fatalf("Couldn't parse %q as date %s\n", after, err)
+			fmt.Printf("Couldn't parse %q as date.\n", after)
+			fmt.Println("Use one of: '2006-01-02', '01/02/2006', '1/2/2006' formats.")
+			flag.Usage()
 		}
 
 		afterDate = time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 99, t.Nanosecond(), t.Location())
@@ -42,7 +65,8 @@ func main() {
 	// Open the file
 	csvfile, err := os.Open(flag.Args()[0])
 	if err != nil {
-		log.Fatalln("Couldn't open the csv file", err)
+		fmt.Println("Couldn't open the csv file", err)
+		os.Exit(1)
 	}
 	defer csvfile.Close()
 
@@ -50,7 +74,8 @@ func main() {
 
 	rows, err := r.ReadAll()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
+		os.Exit(1)
 	}
 
 	seen := make(map[string]struct{})
@@ -88,7 +113,8 @@ func main() {
 	for i, row := range rows {
 		if i == 0 {
 			if row[0] != "Vehicle Name" && row[1] != "VIN" && row[2] != "Timezone" {
-				log.Fatal("Invalid CSV File. Make sure you are using the Charging Data export, not Charge Summary")
+				fmt.Print("Invalid CSV File. Make sure you are using the Charging Data export, not Charge Summary")
+				os.Exit(1)
 			}
 
 			continue
@@ -134,7 +160,8 @@ func main() {
 
 		chargeDate, err := time.Parse("2006-01-02 03:04PM", record.StartTime)
 		if err != nil {
-			log.Fatalf("Could not parse charge start time: %q\n", record.StartTime)
+			fmt.Printf("Could not parse charge start time: %q\n", record.StartTime)
+			os.Exit(1)
 		}
 
 		if chargeDate.After(afterDate) {
