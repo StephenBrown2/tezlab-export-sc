@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	flag "github.com/spf13/pflag"
@@ -168,8 +169,13 @@ func main() {
 			os.Exit(1)
 		}
 
+		scLocation := record.Supercharger
+		if !strings.Contains(record.Supercharger, record.Location[len(record.Location)-4:]) {
+			scLocation += record.Location[len(record.Location)-4:]
+		}
+
 		if chargeDate.After(afterDate) {
-			fmt.Printf("%s;%s;%s\n", chargeDate.Format("03:04PM"), chargeDate.Format("01/02/2006"), record.Supercharger)
+			fmt.Printf("%s;%s;%s\n", chargeDate.Format("03:04PM"), chargeDate.Format("01/02/2006"), scLocation)
 		}
 	}
 }
