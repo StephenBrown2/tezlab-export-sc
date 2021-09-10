@@ -110,10 +110,14 @@ func main() {
 
 	var record ChargeRow
 
+	fmt.Printf("%s;%s;%s\n", "Time", "First Visit", "Supercharger")
 	for i, row := range rows {
 		if i == 0 {
 			if row[0] != "Vehicle Name" && row[1] != "VIN" && row[2] != "Timezone" {
-				fmt.Print("Invalid CSV File. Make sure you are using the Charging Data export, not Charge Summary")
+				fmt.Print(
+					"Invalid CSV File. Make sure you are using the Charging Data export (from Activity > Export > Charges),",
+					"not Charge Summary (Locations)",
+				)
 				os.Exit(1)
 			}
 
@@ -165,7 +169,7 @@ func main() {
 		}
 
 		if chargeDate.After(afterDate) {
-			fmt.Printf("%s;%s;%s\n", chargeDate.Format("01/02/2006"), chargeDate.Format("03:04PM"), record.Supercharger)
+			fmt.Printf("%s;%s;%s\n", chargeDate.Format("03:04PM"), chargeDate.Format("01/02/2006"), record.Supercharger)
 		}
 	}
 }
