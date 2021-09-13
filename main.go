@@ -112,6 +112,7 @@ func main() {
 	var record ChargeRow
 
 	fmt.Printf("%s;%s;%s\n", "Time", "First Visit", "Supercharger")
+
 	for i, row := range rows {
 		if i == 0 {
 			if row[0] != "Vehicle Name" && row[1] != "VIN" && row[2] != "Timezone" {
@@ -172,6 +173,10 @@ func main() {
 		scLocation := record.Supercharger
 		if !strings.Contains(record.Supercharger, record.Location[len(record.Location)-4:]) {
 			scLocation += record.Location[len(record.Location)-4:]
+		}
+
+		if strings.HasSuffix(scLocation, "COs") {
+			scLocation = strings.TrimRight(scLocation, "s")
 		}
 
 		if chargeDate.After(afterDate) {
