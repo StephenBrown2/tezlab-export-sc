@@ -22,7 +22,7 @@ func usage() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("\nUsage: %s [--after DATE] CSVFILE\n", filepath.Base(exec))
+	fmt.Printf("\nUsage: %s [options] CSVFILE\n", filepath.Base(exec))
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -38,11 +38,13 @@ func username() string {
 
 func main() {
 	var (
-		after        string
-		afterDate    time.Time
-		debug, trace bool
-		err          error
+		after, tzAfter         string
+		afterDate, tzAfterDate time.Time
+		debug, trace           bool
+		err                    error
 	)
+
+	tzAfterDate = time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.Now().Location())
 
 	outputHeader := strings.Join([]string{"Time", "First Visit", "Supercharger"}, ";")
 
@@ -50,6 +52,7 @@ func main() {
 	help := flag.BoolP("help", "h", false, "Display help")
 
 	flag.StringVar(&after, "after", "", "Date after which to display new supercharger visits")
+	flag.StringVar(&tzAfter, "tz-after", "", fmt.Sprintf("Date after which to fetch timezone for supercharger visits (Default: %s)", tzAfterDate.Format("1/2/2006")))
 	flag.BoolVar(&debug, "debug", false, "Display debugging information for troubleshooting")
 	flag.BoolVar(&trace, "trace", false, "Display more information for troubleshooting (overrides --debug)")
 
@@ -88,6 +91,25 @@ func main() {
 		}
 
 		afterDate = time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 99, t.Nanosecond(), t.Location())
+		tzAfterDate = afterDate
+	}
+
+	if tzAfter != "" {
+		var t time.Time
+		for _, format := range []string{"2006-01-02", "01/02/2006", "1/2/2006"} {
+			t, err = time.Parse(format, tzAfter)
+			if err == nil {
+				break
+			}
+		}
+
+		if err != nil {
+			fmt.Printf("Couldn't parse %q as date.\n", tzAfter)
+			fmt.Println("Use one of: '2006-01-02', '01/02/2006', '1/2/2006' formats.")
+			flag.Usage()
+		}
+
+		tzAfterDate = time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 99, t.Nanosecond(), t.Location())
 	}
 
 	// Open the file
@@ -212,38 +234,40 @@ func main() {
 			os.Exit(1)
 		}
 
-		coord := strings.Split(record.Coordinate, ",")
-		log.Debugf("Coordinates: %v", coord)
+		if chargeDate.After(tzAfterDate) {
+			coord := strings.Split(record.Coordinate, ",")
+			log.Debugf("Coordinates: %v", coord)
 
-		lat, err := strconv.ParseFloat(coord[0], 64)
-		if err != nil {
-			fmt.Printf("Could not parse charge location latitude as float: %q - %s\n", coord[0], err)
-			os.Exit(1)
+			lat, err := strconv.ParseFloat(coord[0], 64)
+			if err != nil {
+				fmt.Printf("Could not parse charge location latitude as float: %q - %s\n", coord[0], err)
+				os.Exit(1)
+			}
+
+			lon, err := strconv.ParseFloat(coord[1], 64)
+			if err != nil {
+				fmt.Printf("Could not parse charge location longitude as float: %q - %s\n", coord[1], err)
+				os.Exit(1)
+			}
+
+			log.Debug("Retrieving Timezone from GeoNames")
+			gtz, err := timezone.RetrieveGeoNamesTimezone(lat, lon, username())
+			if err != nil {
+				fmt.Printf("Could not retrieve Timezone from GeoNames: %s\n", err)
+				os.Exit(1)
+			}
+
+			log.Debugf("Loading location from %q", gtz.TimezoneID)
+			location, err := time.LoadLocation(gtz.TimezoneID)
+			if err != nil {
+				fmt.Printf("Could not parse TimezoneID: %q - %s\n", gtz.TimezoneID, err)
+				os.Exit(1)
+			}
+
+			log.Debugf("Charge date before: %s", chargeDate)
+			chargeDate = chargeDate.In(location)
+			log.Debugf("Charge date after: %s", chargeDate)
 		}
-
-		lon, err := strconv.ParseFloat(coord[1], 64)
-		if err != nil {
-			fmt.Printf("Could not parse charge location longitude as float: %q - %s\n", coord[1], err)
-			os.Exit(1)
-		}
-
-		log.Debug("Retrieving Timezone from GeoNames")
-		gtz, err := timezone.RetrieveGeoNamesTimezone(lat, lon, username())
-		if err != nil {
-			fmt.Printf("Could not retrieve Timezone from GeoNames: %s\n", err)
-			os.Exit(1)
-		}
-
-		log.Debugf("Loading location from %q", gtz.TimezoneID)
-		location, err := time.LoadLocation(gtz.TimezoneID)
-		if err != nil {
-			fmt.Printf("Could not parse TimezoneID: %q - %s\n", gtz.TimezoneID, err)
-			os.Exit(1)
-		}
-
-		log.Debugf("Charge date before: %s", chargeDate)
-		chargeDate = chargeDate.In(location)
-		log.Debugf("Charge date after: %s", chargeDate)
 
 		log.Debugf("scLocation: %q", scLocation)
 		if !strings.Contains(scLocation, record.Location[len(record.Location)-4:]) {
