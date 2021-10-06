@@ -18,7 +18,7 @@ import (
 func usage() {
 	exec, err := os.Executable()
 	if err != nil {
-		fmt.Println("Error finding own executable")
+		log.Error("Error finding own executable")
 		os.Exit(1)
 	}
 
@@ -115,7 +115,7 @@ func main() {
 	// Open the file
 	csvfile, err := os.Open(flag.Args()[0])
 	if err != nil {
-		fmt.Println("Couldn't open the csv file", err)
+		log.Error("Couldn't open the csv file", err)
 		os.Exit(1)
 	}
 	defer csvfile.Close()
@@ -124,7 +124,7 @@ func main() {
 
 	rows, err := r.ReadAll()
 	if err != nil {
-		fmt.Print(err)
+		log.Error(err)
 		os.Exit(1)
 	}
 
@@ -163,11 +163,11 @@ func main() {
 	for i, row := range rows {
 		if i == 0 {
 			if row[13] != "Supercharger" {
-				fmt.Println(
+				log.Error(
 					"Invalid CSV File! Make sure you are using the Charging Data export",
 					"(from Activity > Export > Charges), not Charge Summary (Locations)",
 				)
-				fmt.Printf("Got: '%s'\n", strings.Join(row, "', '"))
+				log.Errorf("Got CSV header: '%s'\n", strings.Join(row, "', '"))
 				os.Exit(1)
 			}
 
@@ -223,14 +223,14 @@ func main() {
 		log.Debugf("Loading record Timezone: %q", record.Timezone)
 		recordLoc, err := time.LoadLocation(record.Timezone)
 		if err != nil {
-			fmt.Printf("Could not parse charge location timezone: %q - %s\n", record.Timezone, err)
+			log.Errorf("Could not parse charge location timezone: %q - %s\n", record.Timezone, err)
 			os.Exit(1)
 		}
 
 		log.Debugf("Parsing time %q in Location %q", record.StartTime, recordLoc)
 		chargeDate, err := time.ParseInLocation("2006-01-02 03:04PM", record.StartTime, recordLoc)
 		if err != nil {
-			fmt.Printf("Could not parse charge start time: %q - %s\n", record.StartTime, err)
+			log.Errorf("Could not parse charge start time: %q - %s\n", record.StartTime, err)
 			os.Exit(1)
 		}
 
@@ -240,27 +240,27 @@ func main() {
 
 			lat, err := strconv.ParseFloat(coord[0], 64)
 			if err != nil {
-				fmt.Printf("Could not parse charge location latitude as float: %q - %s\n", coord[0], err)
+				log.Errorf("Could not parse charge location latitude as float: %q - %s\n", coord[0], err)
 				os.Exit(1)
 			}
 
 			lon, err := strconv.ParseFloat(coord[1], 64)
 			if err != nil {
-				fmt.Printf("Could not parse charge location longitude as float: %q - %s\n", coord[1], err)
+				log.Errorf("Could not parse charge location longitude as float: %q - %s\n", coord[1], err)
 				os.Exit(1)
 			}
 
 			log.Debug("Retrieving Timezone from GeoNames")
 			gtz, err := timezone.RetrieveGeoNamesTimezone(lat, lon, username())
 			if err != nil {
-				fmt.Printf("Could not retrieve Timezone from GeoNames: %s\n", err)
+				log.Errorf("Could not retrieve Timezone from GeoNames: %s\n", err)
 				os.Exit(1)
 			}
 
 			log.Debugf("Loading location from %q", gtz.TimezoneID)
 			location, err := time.LoadLocation(gtz.TimezoneID)
 			if err != nil {
-				fmt.Printf("Could not parse TimezoneID: %q - %s\n", gtz.TimezoneID, err)
+				log.Errorf("Could not parse TimezoneID: %q - %s\n", gtz.TimezoneID, err)
 				os.Exit(1)
 			}
 
