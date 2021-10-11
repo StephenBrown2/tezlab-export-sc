@@ -206,15 +206,30 @@ func main() {
 		}
 		log.Tracef("Loaded record: %+v", record)
 
-		if record.Supercharging != "true" {
+		if record.Supercharging != "true" && !strings.Contains(record.UserChargeLocation, "Super") {
 			log.Debug("Skipping because not a supercharger")
 			continue
 		}
 
 		scLocation := record.Supercharger
 
+		if scLocation == "" { // User-entered Supercharger
+			scLocation = record.Location
+		}
+
+		log.Debugf("scLocation: %q", scLocation)
+		if !strings.Contains(scLocation, record.Location[len(record.Location)-4:]) && scLocation[len(scLocation)-4] != ',' {
+			scLocation += record.Location[len(record.Location)-4:]
+			log.Debugf("scLocation new: %q", scLocation)
+		}
+
+		if strings.HasSuffix(scLocation, "COs") {
+			scLocation = strings.TrimRight(scLocation, "s")
+			log.Debugf("scLocation trimmed: %q", scLocation)
+		}
+
 		if _, found := seen[scLocation]; found {
-			log.Debug("Skipping because supercharger already seen")
+			log.Debugf("Skipping because %s already seen", scLocation)
 			continue
 		}
 
@@ -267,17 +282,6 @@ func main() {
 			log.Debugf("Charge date before: %s", chargeDate)
 			chargeDate = chargeDate.In(location)
 			log.Debugf("Charge date after: %s", chargeDate)
-		}
-
-		log.Debugf("scLocation: %q", scLocation)
-		if !strings.Contains(scLocation, record.Location[len(record.Location)-4:]) {
-			scLocation += record.Location[len(record.Location)-4:]
-			log.Debugf("scLocation new: %q", scLocation)
-		}
-
-		if strings.HasSuffix(scLocation, "COs") {
-			scLocation = strings.TrimRight(scLocation, "s")
-			log.Debugf("scLocation trimmed: %q", scLocation)
 		}
 
 		if chargeDate.After(afterDate) {
