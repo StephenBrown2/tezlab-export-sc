@@ -15,6 +15,142 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+type ChargeRow struct {
+	VehicleName          string `csv:"Vehicle Name"`
+	Vin                  string `csv:"VIN"`
+	Timezone             string `csv:"Timezone"`
+	StartTime            string `csv:"Start Time"`
+	EndTime              string `csv:"End Time"`
+	OdometerMi           string `csv:"Odometer (mi)"`
+	PowerDrawnKWh        string `csv:"Power Drawn (kWh)"`
+	ChargeEnergyAddedKWh string `csv:"Charge Energy Added (kWh)"`
+	StartRangeMi         string `csv:"Start Range (mi)"`
+	EndRangeMi           string `csv:"End Range (mi)"`
+	RangeAddedMi         string `csv:"Range Added (mi)"`
+	DurationS            string `csv:"Duration (s)"`
+	Supercharging        string `csv:"Supercharging"`
+	Supercharger         string `csv:"Supercharger"`
+	MaxChargerPowerKW    string `csv:"Max Charger Power (kW)"`
+	FastChargerPresent   string `csv:"Fast Charger Present"`
+	ConnectorType        string `csv:"Connector Type"`
+	Location             string `csv:"Location"`
+	Coordinate           string `csv:"Coordinate"`
+	UserChargeLocation   string `csv:"User Charge Location"`
+	CostUSD              string `csv:"Cost (USD)"`
+	TemperatureF         string `csv:"Temperature (F)"`
+	CO2G                 string `csv:"CO2 (g)"`
+	GCO2KWh              string `csv:"gCO2/kWh"`
+	EqFuelBurnGal        string `csv:"Eq. Fuel Burn (gal)"`
+}
+
+func NewRecordFromCSV(row []string) ChargeRow {
+	return ChargeRow{
+		VehicleName:          row[0],
+		Vin:                  row[1],
+		Timezone:             row[2],
+		StartTime:            row[3],
+		EndTime:              row[4],
+		OdometerMi:           row[5],
+		PowerDrawnKWh:        row[6],
+		ChargeEnergyAddedKWh: row[7],
+		StartRangeMi:         row[8],
+		EndRangeMi:           row[9],
+		RangeAddedMi:         row[10],
+		DurationS:            row[11],
+		Supercharging:        row[12],
+		Supercharger:         row[13],
+		MaxChargerPowerKW:    row[14],
+		FastChargerPresent:   row[15],
+		ConnectorType:        row[16],
+		Location:             row[17],
+		Coordinate:           row[18],
+		UserChargeLocation:   row[19],
+		CostUSD:              row[20],
+		TemperatureF:         row[21],
+		CO2G:                 row[22],
+		GCO2KWh:              row[23],
+		EqFuelBurnGal:        row[24],
+	}
+}
+
+func (record ChargeRow) IsSupercharger() bool {
+	log.Debugf("record.Supercharging == %q", record.Supercharging)
+	log.Debugf("record.UserChargeLocation == %q (%t)", record.UserChargeLocation, strings.Contains(record.UserChargeLocation, "Super"))
+	return record.Supercharging == "true" || strings.Contains(record.UserChargeLocation, "Super")
+}
+
+func (record ChargeRow) SuperchargerLocation() string {
+	scLocation := record.Supercharger
+
+	if scLocation == "" { // User-entered Supercharger
+		scLocation = record.Location
+	}
+
+	log.Debugf("scLocation: %q", scLocation)
+	if !strings.Contains(scLocation, record.Location[len(record.Location)-4:]) && scLocation[len(scLocation)-4] != ',' {
+		scLocation += record.Location[len(record.Location)-4:]
+		log.Debugf("scLocation new: %q", scLocation)
+	}
+
+	if strings.HasSuffix(scLocation, "COs") {
+		scLocation = strings.TrimRight(scLocation, "s")
+		log.Debugf("scLocation trimmed: %q", scLocation)
+	}
+
+	return scLocation
+}
+
+func (record ChargeRow) StartTimeInRecordTimezone() time.Time {
+	log.Debugf("Loading record Timezone: %q", record.Timezone)
+	recordLoc, err := time.LoadLocation(record.Timezone)
+	if err != nil {
+		log.Errorf("Could not parse charge location timezone: %q - %s\n", record.Timezone, err)
+		os.Exit(1)
+	}
+
+	log.Debugf("Parsing time %q in Location %q", record.StartTime, recordLoc)
+	chargeDate, err := time.ParseInLocation("2006-01-02 03:04PM", record.StartTime, recordLoc)
+	if err != nil {
+		log.Errorf("Could not parse charge start time: %q - %s\n", record.StartTime, err)
+		os.Exit(1)
+	}
+
+	return chargeDate
+}
+
+func (record ChargeRow) LocationTimezone() *time.Location {
+	coord := strings.Split(record.Coordinate, ",")
+	log.Debugf("Coordinates: %v", coord)
+
+	lat, err := strconv.ParseFloat(coord[0], 64)
+	if err != nil {
+		log.Errorf("Could not parse charge location latitude as float: %q - %s\n", coord[0], err)
+		os.Exit(1)
+	}
+
+	lon, err := strconv.ParseFloat(coord[1], 64)
+	if err != nil {
+		log.Errorf("Could not parse charge location longitude as float: %q - %s\n", coord[1], err)
+		os.Exit(1)
+	}
+
+	log.Debug("Retrieving Timezone from GeoNames")
+	gtz, err := timezone.RetrieveGeoNamesTimezone(lat, lon, username())
+	if err != nil {
+		log.Errorf("Could not retrieve Timezone from GeoNames: %s\n", err)
+		os.Exit(1)
+	}
+
+	log.Debugf("Loading location from %q", gtz.TimezoneID)
+	location, err := time.LoadLocation(gtz.TimezoneID)
+	if err != nil {
+		log.Errorf("Could not parse TimezoneID: %q - %s\n", gtz.TimezoneID, err)
+		os.Exit(1)
+	}
+
+	return location
+}
+
 func usage() {
 	exec, err := os.Executable()
 	if err != nil {
@@ -34,6 +170,25 @@ func username() string {
 	}
 	s := strings.Split(buildInfo.Path, "/")
 	return s[len(s)-2]
+}
+
+func parseDate(s string) (t time.Time) {
+	var err error
+	validFormats := []string{"2006-01-02", "01/02/2006", "1/2/2006"}
+	for _, format := range validFormats {
+		t, err = time.Parse(format, s)
+		if err == nil {
+			break
+		}
+	}
+
+	if err != nil {
+		fmt.Printf("Couldn't parse %q as date.\n", s)
+		fmt.Printf("Use one of: '%s' formats.\n", strings.Join(validFormats, "', '"))
+		flag.Usage()
+	}
+
+	return time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 99, t.Nanosecond(), t.Location())
 }
 
 func main() {
@@ -76,40 +231,12 @@ func main() {
 	}
 
 	if after != "" {
-		var t time.Time
-		for _, format := range []string{"2006-01-02", "01/02/2006", "1/2/2006"} {
-			t, err = time.Parse(format, after)
-			if err == nil {
-				break
-			}
-		}
-
-		if err != nil {
-			fmt.Printf("Couldn't parse %q as date.\n", after)
-			fmt.Println("Use one of: '2006-01-02', '01/02/2006', '1/2/2006' formats.")
-			flag.Usage()
-		}
-
-		afterDate = time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 99, t.Nanosecond(), t.Location())
+		afterDate = parseDate(after)
 		tzAfterDate = afterDate
 	}
 
 	if tzAfter != "" {
-		var t time.Time
-		for _, format := range []string{"2006-01-02", "01/02/2006", "1/2/2006"} {
-			t, err = time.Parse(format, tzAfter)
-			if err == nil {
-				break
-			}
-		}
-
-		if err != nil {
-			fmt.Printf("Couldn't parse %q as date.\n", tzAfter)
-			fmt.Println("Use one of: '2006-01-02', '01/02/2006', '1/2/2006' formats.")
-			flag.Usage()
-		}
-
-		tzAfterDate = time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 99, t.Nanosecond(), t.Location())
+		tzAfterDate = parseDate(tzAfter)
 	}
 
 	// Open the file
@@ -130,39 +257,11 @@ func main() {
 
 	seen := make(map[string]struct{})
 
-	type ChargeRow struct {
-		VehicleName          string `csv:"Vehicle Name"`
-		Vin                  string `csv:"VIN"`
-		Timezone             string `csv:"Timezone"`
-		StartTime            string `csv:"Start Time"`
-		EndTime              string `csv:"End Time"`
-		OdometerMi           string `csv:"Odometer (mi)"`
-		PowerDrawnKWh        string `csv:"Power Drawn (kWh)"`
-		ChargeEnergyAddedKWh string `csv:"Charge Energy Added (kWh)"`
-		StartRangeMi         string `csv:"Start Range (mi)"`
-		EndRangeMi           string `csv:"End Range (mi)"`
-		RangeAddedMi         string `csv:"Range Added (mi)"`
-		DurationS            string `csv:"Duration (s)"`
-		Supercharging        string `csv:"Supercharging"`
-		Supercharger         string `csv:"Supercharger"`
-		MaxChargerPowerKW    string `csv:"Max Charger Power (kW)"`
-		FastChargerPresent   string `csv:"Fast Charger Present"`
-		ConnectorType        string `csv:"Connector Type"`
-		Location             string `csv:"Location"`
-		Coordinate           string `csv:"Coordinate"`
-		UserChargeLocation   string `csv:"User Charge Location"`
-		CostUSD              string `csv:"Cost (USD)"`
-		TemperatureF         string `csv:"Temperature (F)"`
-		CO2G                 string `csv:"CO2 (g)"`
-		GCO2KWh              string `csv:"gCO2/kWh"`
-		EqFuelBurnGal        string `csv:"Eq. Fuel Burn (gal)"`
-	}
-
 	var record ChargeRow
 
 	for i, row := range rows {
 		if i == 0 {
-			if row[13] != "Supercharger" {
+			if len(row) != 26 || row[13] != "Supercharger" {
 				log.Error(
 					"Invalid CSV File! Make sure you are using the Charging Data export",
 					"(from Activity > Export > Charges), not Charge Summary (Locations)",
@@ -177,56 +276,15 @@ func main() {
 		}
 
 		log.Tracef("Loading record from row: '%s'", strings.Join(row, "', '"))
-		record = ChargeRow{
-			VehicleName:          row[0],
-			Vin:                  row[1],
-			Timezone:             row[2],
-			StartTime:            row[3],
-			EndTime:              row[4],
-			OdometerMi:           row[5],
-			PowerDrawnKWh:        row[6],
-			ChargeEnergyAddedKWh: row[7],
-			StartRangeMi:         row[8],
-			EndRangeMi:           row[9],
-			RangeAddedMi:         row[10],
-			DurationS:            row[11],
-			Supercharging:        row[12],
-			Supercharger:         row[13],
-			MaxChargerPowerKW:    row[14],
-			FastChargerPresent:   row[15],
-			ConnectorType:        row[16],
-			Location:             row[17],
-			Coordinate:           row[18],
-			UserChargeLocation:   row[19],
-			CostUSD:              row[20],
-			TemperatureF:         row[21],
-			CO2G:                 row[22],
-			GCO2KWh:              row[23],
-			EqFuelBurnGal:        row[24],
-		}
+		record = NewRecordFromCSV(row)
 		log.Tracef("Loaded record: %+v", record)
 
-		if record.Supercharging != "true" && !strings.Contains(record.UserChargeLocation, "Super") {
+		if !record.IsSupercharger() {
 			log.Debug("Skipping because not a supercharger")
 			continue
 		}
 
-		scLocation := record.Supercharger
-
-		if scLocation == "" { // User-entered Supercharger
-			scLocation = record.Location
-		}
-
-		log.Debugf("scLocation: %q", scLocation)
-		if !strings.Contains(scLocation, record.Location[len(record.Location)-4:]) && scLocation[len(scLocation)-4] != ',' {
-			scLocation += record.Location[len(record.Location)-4:]
-			log.Debugf("scLocation new: %q", scLocation)
-		}
-
-		if strings.HasSuffix(scLocation, "COs") {
-			scLocation = strings.TrimRight(scLocation, "s")
-			log.Debugf("scLocation trimmed: %q", scLocation)
-		}
+		scLocation := record.SuperchargerLocation()
 
 		if _, found := seen[scLocation]; found {
 			log.Debugf("Skipping because %s already seen", scLocation)
@@ -235,52 +293,11 @@ func main() {
 
 		seen[scLocation] = struct{}{}
 
-		log.Debugf("Loading record Timezone: %q", record.Timezone)
-		recordLoc, err := time.LoadLocation(record.Timezone)
-		if err != nil {
-			log.Errorf("Could not parse charge location timezone: %q - %s\n", record.Timezone, err)
-			os.Exit(1)
-		}
-
-		log.Debugf("Parsing time %q in Location %q", record.StartTime, recordLoc)
-		chargeDate, err := time.ParseInLocation("2006-01-02 03:04PM", record.StartTime, recordLoc)
-		if err != nil {
-			log.Errorf("Could not parse charge start time: %q - %s\n", record.StartTime, err)
-			os.Exit(1)
-		}
+		chargeDate := record.StartTimeInRecordTimezone()
 
 		if chargeDate.After(tzAfterDate) {
-			coord := strings.Split(record.Coordinate, ",")
-			log.Debugf("Coordinates: %v", coord)
-
-			lat, err := strconv.ParseFloat(coord[0], 64)
-			if err != nil {
-				log.Errorf("Could not parse charge location latitude as float: %q - %s\n", coord[0], err)
-				os.Exit(1)
-			}
-
-			lon, err := strconv.ParseFloat(coord[1], 64)
-			if err != nil {
-				log.Errorf("Could not parse charge location longitude as float: %q - %s\n", coord[1], err)
-				os.Exit(1)
-			}
-
-			log.Debug("Retrieving Timezone from GeoNames")
-			gtz, err := timezone.RetrieveGeoNamesTimezone(lat, lon, username())
-			if err != nil {
-				log.Errorf("Could not retrieve Timezone from GeoNames: %s\n", err)
-				os.Exit(1)
-			}
-
-			log.Debugf("Loading location from %q", gtz.TimezoneID)
-			location, err := time.LoadLocation(gtz.TimezoneID)
-			if err != nil {
-				log.Errorf("Could not parse TimezoneID: %q - %s\n", gtz.TimezoneID, err)
-				os.Exit(1)
-			}
-
 			log.Debugf("Charge date before: %s", chargeDate)
-			chargeDate = chargeDate.In(location)
+			chargeDate = chargeDate.In(record.LocationTimezone())
 			log.Debugf("Charge date after: %s", chargeDate)
 		}
 
