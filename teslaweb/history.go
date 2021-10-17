@@ -1,6 +1,8 @@
-package main
+package teslaweb
 
 import "time"
+
+// https://www.tesla.com/teslaaccount/charging/api/history?vin=
 
 type History struct {
 	Code    int64    `json:"code"`
@@ -62,56 +64,3 @@ type Invoice struct {
 	BeInvoiceID string `json:"beInvoiceId"`
 	ProcessFlag int64  `json:"processFlag"`
 }
-
-type Type string
-
-const (
-	Immediate Type = "IMMEDIATE"
-)
-
-type CountryCode string
-
-const (
-	Us CountryCode = "US"
-)
-
-type CurrencyCode string
-
-const (
-	Usd CurrencyCode = "USD"
-)
-
-type FeeType string
-
-const (
-	Charging FeeType = "CHARGING"
-	Parking  FeeType = "PARKING"
-)
-
-type PricingType string
-
-const (
-	FreeSite PricingType = "FREE_SITE"
-	NoCharge PricingType = "NO_CHARGE"
-	Payment  PricingType = "PAYMENT"
-)
-
-type Status string
-
-const (
-	Paid Status = "PAID"
-)
-
-type Uom string
-
-const (
-	Free Uom = "free"
-	Kwh  Uom = "kwh"
-	Min  Uom = "min"
-)
-
-type VehicleMakeType string
-
-const (
-	Tsla VehicleMakeType = "TSLA"
-)
