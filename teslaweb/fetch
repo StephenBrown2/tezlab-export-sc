@@ -42,7 +42,7 @@ curl 'https://www.tesla.com/teslaaccount/charging/api/export?startTime=2019-09-0
 -H 'TE: trailers'
 
 
-curl 'https://www.tesla.com/teslaaccount/charging/api/export?startTime=2019-09-01T04:00:00.000Z&endTime=2021-10-01T04:00:00.000Z&vin=' \
+curl 'https://www.tesla.com/teslaaccount/charging/api/export?startTime=2019-09-01T04:00:00.000Z&endTime=2021-10-20T04:00:00.000Z&vin=' \
 -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0' \
 -H 'Accept: application/json, text/plain, */*' \
 -H 'Referer: https://www.tesla.com/teslaaccount/charging' \
