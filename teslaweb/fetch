@@ -1,0 +1,49 @@
+await fetch("https://www.tesla.com/teslaaccount/charging/api/export?startTime=2019-09-01T04:00:00.000Z&endTime=2019-10-01T04:00:00.000Z&vin=", {
+    "credentials": "include",
+    "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-GPC": "1"
+    },
+    "referrer": "https://www.tesla.com/teslaaccount/charging",
+    "method": "GET",
+    "mode": "cors"
+});
+
+
+curl 'https://www.tesla.com/teslaaccount/charging/api/export?startTime=2019-09-01T04:00:00.000Z&endTime=2021-10-01T04:00:00.000Z&vin=' \
+-H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0' \
+-H 'Accept: application/json, text/plain, */*' \
+-H 'Accept-Language: en-US,en;q=0.5' \
+--compressed \
+-H 'DNT: 1' \
+-H 'Connection: keep-alive' \
+-H 'Referer: https://www.tesla.com/teslaaccount/charging' \
+-H 'Cookie: buy_flow_locale=en_US;
+        slim_session=0%7CgJOaPrCvt7yJeMPZ%2BihF4LzQiEo3%2FiJsi4zcuQoerKBKrUsfHmHnRUgYlNM%2F0RsUjOPrZ%2BQaeWlv%2BzcCG3vJaidRMKJC%2BwxMcmmG%2Flu8KIWTxsohn9Oata3EreN3hVja%7Cd17d92ec0a03bd9df59df4c76dba5dbac4e62812;
+        has_js=1;
+        oxpOriUrl=https%3A%2F%2Fwww.tesla.com%2Fteslaaccount;
+        ak_bmsc=A348A7738CBEFBCF7259D3F22EF8D311~000000000000000000000000000000~YAAQzmncF0X7wod8AQAA2lY4jg3Lp8XJPkdMUlQyBAZu7XxS9SknYhyc0weO2jsDa/MWdJx2AbrfxP0T3GUOmZ8zTUD7g2jL0+4Ezica+dvpnk2lPwKmVjRjh0tzbAI08FRbSXGV3L16DH+tX99wibjhQ45Nsd8F52bd8Pu6+TPTJtkqmehEFot+I2FvVykwFLDcrJyEqZ51HaALUjBqsVZoiyCPgOHKYY3CT8QLsT/qQfQYekvLcxUv3cGJkiu8DS39JxRk13WYkRQqGt77wLIVbNL5n0vE3RDBAsF33DzjgE4z1CgyYgGOuDtJx1C7I3SaU/KKnyQxe1JOHpi6EaZu9sgviPZdG3NmyxYnQ/8zFAz9sDz9WR6sq2RDwSv3S/bUb07V1w==;
+        bm_sv=34C9B4B27A8C4468CBD52639215668ED~Fs9BKnKJ7j4KzMBiREv7RqTaYPlVA6ez8l5A2vVwP5zb+F7MbrfXHDrcKXkPg1xYVPBY5mU8o4HclZjddqjZr9D+TV/wJ45fCNI4tstJqWT6EfTIsua0DP8j1VaWUhI9JD1Iv/2kIyEhuJF333muTQ7aTFVG/yU/mjKsFXBUnFw=;
+        _abck=6519768D6FE72E2BB19DDCAF7300105A~0~YAAQW2rcFyD4V3l8AQAAkrA5jgZa3AUTP3nvW5HTK6JkCZ2I+i0ZtKywnHO7Mqj++9Xq7pAVgq88FtcYTJF52Zl14gYW0EBNC5Im8kBvKmqQoruioJlZpuw78pUKeLhZyrf29pgNBLuzVmfwnGH1NBue9txLbqUTb7fsgy+pZfx0Y2ExwxypgILTz4pcHkV+Ccvvs6zGKj0NKPvIkVXgXmfbnpNqE1lR83M1gJ/+dULsDjUlFwpj2WMt9WjBvPiR4moY1xtSq788j+7xAyhOR43FDszZsrg1NM4srhMaOMGwRsHpwLQhUQfKhbRGN+WaiCZ9kFJkSka0G17EWY8ArmNCAyj0kfoHgj+R9A6gIX2ZlNzTzI0Slqh1Bdq/y9uhpM1WcY47l3RexidHl6D86Kd/Kgc=~-1~-1~-1;
+        bm_sz=CE2058710B76FDB5FC1BB19FCE66C9F7~YAAQzmncF8X7wod8AQAAI1g4jg3J0K4p9nQ1k8AuzurWSFd/TtiB2KTu+ETMfL7zFd4m7mYE69eqm4vn0AW37XY/CtyFdjZ5MeFC19tvLNBpCdNDlxQJoU6vj5Polch4BvYmNXggyO5BqZnCm6IioKAoHPZnukZIzKRdFnu0mo3L8cUnD3q3oPoO9kX8D2jxL0X+/2UxMm39DnUeRfJEqaGf3w+nZy6kfKYqJ67TJgBZgtpCIAgjEPmq/BatrolB17+PovH1pOvH13fNHsmnK/Yx14OtLvllRB1n9Ib6zo4wEA==~4339780~3617588;
+        auth_session=52b3027b3a;
+        authTeslaWebToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NTE4OCIsImZlZGVyYXRpb25JZCI6IjQzNzkyMTBlLTYzMDAtNDA0Mi05YWJlLTNmMGUzYzM0ODdjYSIsIm1mYUVuYWJsZWQiOmZhbHNlLCJ1c2VyQ291bnRyeUNvZGUiOiJVUyIsImVtYWlsIjoic3RlcGhlbi5icm93bjIrdGVzbGFAZ21haWwuY29tIiwiaWF0IjoxNjM0NDczODM4LCJleHAiOjE2MzQ0NzM5NTh9.nrXJz6ELRWbROOLaOMhNDCDkIynawAOyS5mynVyfKm4;
+        teslaSSORefreshToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ilg0RmNua0RCUVBUTnBrZTZiMnNuRi04YmdVUSJ9.eyJpc3MiOiJodHRwczovL2F1dGgudGVzbGEuY29tIiwiYXVkIjoiaHR0cHM6Ly9hdXRoLnRlc2xhLmNvbS9vYXV0aDIvdjEvdG9rZW4iLCJpYXQiOjE2MzQ0NzM3MTgsImRhdGEiOnsic3ViIjoiNDM3OTIxMGUtNjMwMC00MDQyLTlhYmUtM2YwZTNjMzQ4N2NhIiwic2NwIjpbIm9mZmxpbmVfYWNjZXNzIiwib3BlbmlkIiwib3VfY29kZSIsImVtYWlsIl0sImF6cCI6Im93bmVyc2hpcCIsImFtciI6WyJwd2QiLCJtZmEiLCJvdHAiXSwiYXV0aF90aW1lIjoxNjM0NDczNzE3fX0.vFSLsr-VoohvBQWgNvf_jIW6AIWpfseqVDnaEp8lGoTLFhGmRWPmWF22IfaZLlQ5MdBT52IQe1hQa6CviV4KNw6xkZwoMkD0XmSBPbTI2cBPLVY8Y4DAnqD0S1cuBrVTGo994DLnH5KaP4WvwsLKHBR_pI4ZpFm02AeYzd878uDGge1VyTvdSKlCJxor-YWHOOgxa4RR_8QUqBxsDr2IVzehZVVVh3r2JragqALfKRCp1koRv1k09a3aqaCT2L_NYf0JJg9WjeFVWx-ER-FeWcCEqnn-jH2obygahJVARcLDBkrxaNHZn1hXcfZM83waYGaXeWjdULhuzgb5-qBsHE4D6XD8SErgGfXxKYiieSBd2qCd-bfq3jcfXhpC5yI62v6_jxXvhsN8oZIX9iWkRBI3IERwGi4kIOFCgrPFFQfGdpzvUrgMMIHIHjoymOUWalDhavmfpuQcXaHoYnnAvv7tmMG9yDzXxi968gxJCpA7348N13hb43ATFsqc-VzzynWntuHoFnNru4CEqvmJDq5ZIHwFa54l12ScOPhPQ_NPkisZ365q9xGS-VqijM3OmpriiHb5QVe6PwauIVE1PGt-SF2Cf4cW1im6HlaxP5l_walSF7Vt_KR_zXhYRTkAAka9xes9At9jENB5v-uyU_17op7wvUJig8OZVpbJwgw;
+        teslaSSOIdToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ilg0RmNua0RCUVBUTnBrZTZiMnNuRi04YmdVUSJ9.eyJpc3MiOiJodHRwczovL2F1dGgudGVzbGEuY29tIiwic3ViIjoiNDM3OTIxMGUtNjMwMC00MDQyLTlhYmUtM2YwZTNjMzQ4N2NhIiwiYXVkIjoib3duZXJzaGlwIiwiZXhwIjoxNjM0NDc0MDE4LCJpYXQiOjE2MzQ0NzM3MTgsImF1dGhfdGltZSI6MTYzNDQ3MzcxNywiZW1haWwiOiJzdGVwaGVuLmJyb3duMit0ZXNsYUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm91X2NvZGUiOiJOQSIsInVwZGF0ZWRfYXQiOjE1OTM2MjA4NjF9.w6QvWA0Oz0hp9nxS8IuaH6qsoxNexJp8v-jXiFepW1nxxFNDPdu2A2YpOkG4Q7yR6xCJjNZaxA2FWcRi1solnmAVNoH-crSsnR3Yfy8d_jfX7GmvbqO1rLavBvrm_rbYhnGiv1jimTD38nPj6SWplnatW0tBfnJJKxOKiwFv68tSebrj0MPVv2CkTfQRzVhAFd368aFe42HIf2GtqUJliWkqgppFuki7N9P5ooaZYid1pdPmIKE1sGQX592cPHIXRYoCKEFdINEfnl3znJa5QmyQQCRSm1UIu3yWmLYE2xLIGLe6oMPhNyIt2vc9BljlljzpI_CMxaH2gr0fDZ1BhlVWC2NSE3fVNX4Wj0WeewGPP3qKEoaqR9QFm6PeTXRFOozco6sYvQRHm2XtlaqK6uxpGWkd5bH7GGlb5LWqMRomyLZ228IMquW8ynPXt5yRY1706B2DgKk0r2sChBVWak9v6Dq9hQpDSgjNHcN1mwYY9YTRI9zqo43PmQgW7Pc-fMXaB0pNk2Rjk1BJMqQaAKqmkr-9qcF6bijuHbrUp-LzGloYqSjjjwe3b9F_ZCOp9TPwF-Pqa7nn7RocxD-rWx2riZwOKtssK8bArkeMtZzW-7kXxCT6HorRZDZ2NbjRyM_lpib-s1kuzxQj_qmj2SV67XKdulnPJTCjJU9zVHc' \
+-H 'Sec-Fetch-Dest: empty' \
+-H 'Sec-Fetch-Mode: cors' \
+-H 'Sec-Fetch-Site: same-origin' 
+-H 'Sec-GPC: 1' 
+-H 'TE: trailers'
+
+
+curl 'https://www.tesla.com/teslaaccount/charging/api/export?startTime=2019-09-01T04:00:00.000Z&endTime=2021-10-01T04:00:00.000Z&vin=' \
+-H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0' \
+-H 'Accept: application/json, text/plain, */*' \
+-H 'Referer: https://www.tesla.com/teslaaccount/charging' \
+-H 'Cookie: authTeslaWebToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NTE4OCIsImZlZGVyYXRpb25JZCI6IjQzNzkyMTBlLTYzMDAtNDA0Mi05YWJlLTNmMGUzYzM0ODdjYSIsIm1mYUVuYWJsZWQiOmZhbHNlLCJ1c2VyQ291bnRyeUNvZGUiOiJVUyIsImVtYWlsIjoic3RlcGhlbi5icm93bjIrdGVzbGFAZ21haWwuY29tIiwiaWF0IjoxNjM0NDczODM4LCJleHAiOjE2MzQ0NzM5NTh9.nrXJz6ELRWbROOLaOMhNDCDkIynawAOyS5mynVyfKm4; teslaSSORefreshToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ilg0RmNua0RCUVBUTnBrZTZiMnNuRi04YmdVUSJ9.eyJpc3MiOiJodHRwczovL2F1dGgudGVzbGEuY29tIiwiYXVkIjoiaHR0cHM6Ly9hdXRoLnRlc2xhLmNvbS9vYXV0aDIvdjEvdG9rZW4iLCJpYXQiOjE2MzQ0NzM3MTgsImRhdGEiOnsic3ViIjoiNDM3OTIxMGUtNjMwMC00MDQyLTlhYmUtM2YwZTNjMzQ4N2NhIiwic2NwIjpbIm9mZmxpbmVfYWNjZXNzIiwib3BlbmlkIiwib3VfY29kZSIsImVtYWlsIl0sImF6cCI6Im93bmVyc2hpcCIsImFtciI6WyJwd2QiLCJtZmEiLCJvdHAiXSwiYXV0aF90aW1lIjoxNjM0NDczNzE3fX0.vFSLsr-VoohvBQWgNvf_jIW6AIWpfseqVDnaEp8lGoTLFhGmRWPmWF22IfaZLlQ5MdBT52IQe1hQa6CviV4KNw6xkZwoMkD0XmSBPbTI2cBPLVY8Y4DAnqD0S1cuBrVTGo994DLnH5KaP4WvwsLKHBR_pI4ZpFm02AeYzd878uDGge1VyTvdSKlCJxor-YWHOOgxa4RR_8QUqBxsDr2IVzehZVVVh3r2JragqALfKRCp1koRv1k09a3aqaCT2L_NYf0JJg9WjeFVWx-ER-FeWcCEqnn-jH2obygahJVARcLDBkrxaNHZn1hXcfZM83waYGaXeWjdULhuzgb5-qBsHE4D6XD8SErgGfXxKYiieSBd2qCd-bfq3jcfXhpC5yI62v6_jxXvhsN8oZIX9iWkRBI3IERwGi4kIOFCgrPFFQfGdpzvUrgMMIHIHjoymOUWalDhavmfpuQcXaHoYnnAvv7tmMG9yDzXxi968gxJCpA7348N13hb43ATFsqc-VzzynWntuHoFnNru4CEqvmJDq5ZIHwFa54l12ScOPhPQ_NPkisZ365q9xGS-VqijM3OmpriiHb5QVe6PwauIVE1PGt-SF2Cf4cW1im6HlaxP5l_walSF7Vt_KR_zXhYRTkAAka9xes9At9jENB5v-uyU_17op7wvUJig8OZVpbJwgw;'
