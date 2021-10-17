@@ -22,7 +22,7 @@ type Charge struct {
 	Credit              interface{}     `json:"credit"`
 	DisputeDetails      interface{}     `json:"disputeDetails"`
 	Fees                []Fee           `json:"fees"`
-	BillingType         Type            `json:"billingType"`
+	BillingType         string          `json:"billingType"`
 	Invoices            []Invoice       `json:"invoices"`
 	FapiaoDetails       interface{}     `json:"fapiaoDetails"`
 	ProgramType         string          `json:"programType"`
@@ -60,7 +60,7 @@ type Fee struct {
 type Invoice struct {
 	FileName    string `json:"fileName"`
 	ContentID   string `json:"contentId"`
-	InvoiceType Type   `json:"invoiceType"`
+	InvoiceType string `json:"invoiceType"`
 	BeInvoiceID string `json:"beInvoiceId"`
 	ProcessFlag int64  `json:"processFlag"`
 }

@@ -47,12 +47,6 @@ const (
 	Paid Status = "PAID"
 )
 
-type Type string
-
-const (
-	Immediate Type = "IMMEDIATE"
-)
-
 type Uom string
 
 const (
