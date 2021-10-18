@@ -1,0 +1,3 @@
+ChargeStartDateTime,Vin,Name,Model,Country,SiteLocationName,Description,QuantityBase,QuantityTier1,QuantityTier2,InvoiceNumber,UnitCostBase,UnitCostTier1,UnitCostTier2,VAT,Total Exc. VAT,Total Inc. VAT,Status,Invoice
+2019-09-21T08:38:36-06:00,5YJ3E1EB6KF452182,Stephen Brown II,m3,US,"Estes Park, CO",CHARGING : CREDIT,46.00 kwh,2.00 kwh,25.00 kwh,,0.24/kwh,N/A,N/A,0.00,0.00,0.00,PAID,https://tesla.com/teslaaccount/charging/invoice/
+2019-09-21T08:38:36-06:00,5YJ3E1EB6KF452182,Stephen Brown II,m3,US,"Estes Park, CO",PARKING : PARKING_LESS_THAN_MIN_TIME,N/A,N/A,N/A,,1.00/min,0.50/min,1.00/min,0.00,0.00,0.00,PAID,https://tesla.com/teslaaccount/charging/invoice/
