@@ -6,7 +6,7 @@ import "time"
 
 type Export struct {
 	Code    int64  `json:"code"`
-	Data    Data   `json:"data"`
+	Data    Verify `json:"data"`
 	Message string `json:"message"`
 	Success bool   `json:"success"`
 }

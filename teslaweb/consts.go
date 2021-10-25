@@ -20,6 +20,12 @@ const (
 	ParkingNoCharge  Description = "PARKING : NO_CHARGE"
 )
 
+type DistanceUnit string
+
+const (
+	Mi DistanceUnit = "mi"
+)
+
 type FeeType string
 
 const (
@@ -36,9 +42,12 @@ const (
 type PricingType string
 
 const (
-	FreeSite PricingType = "FREE_SITE"
-	NoCharge PricingType = "NO_CHARGE"
-	Payment  PricingType = "PAYMENT"
+	Credit                 PricingType = "CREDIT"
+	FirstFreeParking       PricingType = "FIRST_FREE_PARKING"
+	FreeSite               PricingType = "FREE_SITE"
+	NoCharge               PricingType = "NO_CHARGE"
+	ParkingLessThanMinTime PricingType = "PARKING_LESS_THAN_MIN_TIME"
+	Payment                PricingType = "PAYMENT"
 )
 
 type Status string
@@ -47,12 +56,14 @@ const (
 	Paid Status = "PAID"
 )
 
-type Uom string
+type UnitOfMeasurement string
 
 const (
-	Free Uom = "free"
-	Kwh  Uom = "kwh"
-	Min  Uom = "min"
+	Empty        UnitOfMeasurement = ""
+	Free         UnitOfMeasurement = "free"
+	FreeCharging UnitOfMeasurement = "free_charging"
+	Kwh          UnitOfMeasurement = "kwh"
+	Min          UnitOfMeasurement = "min"
 )
 
 type VehicleMakeType string
