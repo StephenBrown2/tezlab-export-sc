@@ -56,7 +56,7 @@ func main() {
 
 	tzAfterDate = time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.Now().Location())
 
-	outputHeader := strings.Join([]string{"Time", "First Visit", "Supercharger"}, ";")
+	outputHeader := []string{"Index", "Time", "Date", "Supercharger"}
 
 	flag.Usage = usage
 	help := flag.BoolP("help", "h", false, "Display help")
@@ -113,6 +113,7 @@ func main() {
 	seen := make(map[string]struct{})
 
 	var record tezlab.ChargeRecord
+	w := csv.NewWriter(os.Stdout)
 
 	for i, row := range rows {
 		if i == 0 {
@@ -125,7 +126,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			fmt.Println(outputHeader)
+			w.Write(outputHeader)
 
 			continue
 		}
@@ -158,7 +159,8 @@ func main() {
 
 		if chargeDate.After(afterDate) {
 			log.Trace(outputHeader)
-			fmt.Printf("%d;%s;%s;%s\n", len(seen), chargeDate.Format("03:04PM MST"), chargeDate.Format("01/02/2006"), scLocation)
+			w.Write([]string{fmt.Sprint(len(seen)), chargeDate.Format("03:04PM MST"), chargeDate.Format("01/02/2006"), scLocation})
+			w.Flush()
 		}
 	}
 }
