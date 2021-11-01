@@ -54,7 +54,7 @@ func main() {
 		err                    error
 	)
 
-	tzAfterDate = time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.Now().Location())
+	tzAfterDate = time.Now().AddDate(0, 0, -7)
 
 	outputHeader := []string{"Index", "Time", "Date", "Supercharger"}
 
@@ -62,7 +62,7 @@ func main() {
 	help := flag.BoolP("help", "h", false, "Display help")
 
 	flag.StringVar(&after, "after", "", "Date after which to display new supercharger visits")
-	flag.StringVar(&tzAfter, "tz-after", "", fmt.Sprintf("Date after which to fetch timezone for supercharger visits (Default: %s)", tzAfterDate.Format("1/2/2006")))
+	flag.StringVar(&tzAfter, "tz-after", "", fmt.Sprintf("Date after which to fetch timezone for supercharger visits (Default: one week ago - %s)", tzAfterDate.Format("1/2/2006")))
 	flag.BoolVar(&debug, "debug", false, "Display debugging information for troubleshooting")
 	flag.BoolVar(&trace, "trace", false, "Display more information for troubleshooting (overrides --debug)")
 
