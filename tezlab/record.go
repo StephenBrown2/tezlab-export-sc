@@ -1,8 +1,8 @@
 package tezlab
 
 import (
-	"fmt"
 	"os"
+	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -81,7 +81,12 @@ func (r ChargeRecord) SuperchargerLocation() string {
 	scLocation := r.Supercharger
 
 	if scLocation == "" { // User-entered Supercharger
-		scLocation = r.Location
+		re := regexp.MustCompile("^[A-Z][a-z ]+, [A-Z]{2}")
+		if re.Match([]byte(r.UserChargeLocation)) {
+			return r.UserChargeLocation
+		} else {
+			scLocation = r.Location
+		}
 	}
 
 	log.Debugf("scLocation: %q", scLocation)
@@ -92,7 +97,6 @@ func (r ChargeRecord) SuperchargerLocation() string {
 	}
 
 	if strings.HasSuffix(scLocation, "COs") {
-		fmt.Println(r)
 		scLocation = strings.TrimRight(scLocation, "s")
 		log.Debugf("scLocation trimmed: %q", scLocation)
 	}
